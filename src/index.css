@@ -1,5 +1,7 @@
 body {
   margin: 0;
+
+  min-height: 100vh;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
@@ -15,6 +17,7 @@ code {
 Taken from the vanilla-tilt.js demo site:
 https://micku7zu.github.io/vanilla-tilt.js/index.html
 */
+
 .tilt-root {
   height: 150px;
   background-color: red;
@@ -46,7 +49,10 @@ https://micku7zu.github.io/vanilla-tilt.js/index.html
 .game {
   font: 14px "Century Gothic", Futura, sans-serif;
   margin: 20px;
-  min-height: 260px;
+  min-height: 15em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .game ol,
@@ -61,11 +67,9 @@ https://micku7zu.github.io/vanilla-tilt.js/index.html
 }
 
 .status {
-  margin-bottom: 10px;
-}
-
-.restart {
-  margin-top: 10px;
+  font-size: 1.5em;
+  font-weight: 500;
+  word-spacing: 3px;
 }
 
 .square {
@@ -75,14 +79,19 @@ https://micku7zu.github.io/vanilla-tilt.js/index.html
   font-size: 24px;
   font-weight: bold;
   line-height: 34px;
-  height: 34px;
   margin-right: -1px;
   margin-top: -1px;
   padding: 0;
   text-align: center;
-  width: 34px;
+  height: 55px;
+  width: 60px;
 }
-
+.restart {
+  margin-block-start: 1em !important;
+  font-size: 1.5em;
+  font-weight: 500;
+  word-spacing: 3px;
+}
 .square:focus {
   outline: none;
   background: #ddd;
@@ -114,6 +123,10 @@ body[class*="6"] > iframe {
   color: #8a0000;
 }
 
+.game-title {
+  text-align: center;
+  padding: 2em;
+}
 .pokemon-info-app input {
   line-height: 2;
   font-size: 16px;
@@ -124,7 +137,18 @@ body[class*="6"] > iframe {
   padding-right: 10px;
   background-color: #eee;
 }
-
+.history-btn {
+  padding: 4px;
+  border-radius: 5px;
+  margin: 4px;
+  background: #d3d3d31a;
+  border: 2px solid #e8e8e8;
+  text-transform: capitalize;
+  cursor: pointer;
+}
+.history-btn:hover {
+  background: #9c97971a;
+}
 .pokemon-info-app button {
   font-size: 1rem;
   font-family: inherit;

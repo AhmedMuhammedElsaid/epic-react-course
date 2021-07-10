@@ -1,44 +1,20 @@
-import React, { useState } from 'react'
+import React, { FunctionComponent, useState } from 'react'
 import useLocalStorageState from '../../hooks/useLocalStorage'
 
-function Board() {
-    // 🐨 squares is the state for this component. Add useState for squares
-    const [squares, setSquares] = useLocalStorageState("squares", Array(9).fill(null))
-
-    // 🐨 We'll need the following bits of derived state:
-    const nextValue = calculateNextValue(squares)
-    const winner = calculateWinner(squares)
-    const status = calculateStatus(winner, squares, nextValue)
-
-
-    // This is the function your square click handler will call. `square` should
-    // be an index. So if they click the center square, this will be `4`.
-    function selectSquare(square: number) {
-        if (winner || squares[square]) {
-            return
-        }
-        const squaresCopy = [...squares];
-        squaresCopy[square] = nextValue
-        setSquares(squaresCopy)
-    }
-
-    function restart() {
-        // 🐨 reset the squares
-        // 💰 `Array(9).fill(null)` will do it!
-        setSquares(Array(9).fill(null))
-    };
-
+interface BoardProps {
+    onClick: (index: number) => void
+    squares: string[]
+}
+const Board: FunctionComponent<BoardProps> = ({ squares, onClick }) => {
     function renderSquare(i: number) {
         return (
-            <button className="square" onClick={() => selectSquare(i)}>
+            <button className="square" onClick={() => onClick(i)}>
                 {squares[i]}
             </button>
         )
     };
     return (
         <div>
-            {/* 🐨 put the status in the div below */}
-            <div className="status">{status}</div>
             <div className="board-row">
                 {renderSquare(0)}
                 {renderSquare(1)}
@@ -54,24 +30,68 @@ function Board() {
                 {renderSquare(7)}
                 {renderSquare(8)}
             </div>
-            <button className="restart" onClick={restart}>
-                restart
-            </button>
         </div>
     )
 }
 
 function Game() {
+    // 🐨 squares is the state for this component. Add useState for squares
+
+    const [currentStep, setCurrentStep] = useLocalStorageState("tic-tac-toe:step", 0)
+    const [history, setHistory] = useLocalStorageState("tic-tac-toe:history", [Array(9).fill(null)])
+    const currentSquares = history[currentStep]
+    const nextValue = calculateNextValue(currentSquares)
+    const winner = calculateWinner(currentSquares)
+    const status = calculateStatus(winner, currentSquares, nextValue)
+
+    console.log("currentStep", currentStep);
+    console.log("history", history);
+
+    function selectSquare(square: number) {
+        console.log("square", square);
+        console.log("currentSquares", currentSquares);
+        if (winner || currentSquares[square]) {
+            return
+        }
+        const newHistory = history.slice(0, currentStep + 1)
+        console.log("newHistory", newHistory);
+        const squaresCopy = [...currentSquares];
+        squaresCopy[square] = nextValue
+        setHistory([...newHistory, squaresCopy])
+        setCurrentStep(newHistory.length)
+    }
+
+    function restart() {
+
+        setHistory([Array(9).fill(null)])
+        setCurrentStep(0)
+    };
+    const moves = history?.map((stepSquares: string[], step: number) => {
+        const desc = step === 0 ? "Go to game start" : `Go to move ${step}`
+        const isCurrentStep = step === currentStep;
+        return <li key={step}>
+            <button className="history-btn" disabled={isCurrentStep} onClick={() => setCurrentStep(step)}>
+                {desc} {isCurrentStep ? `(current)` : null}
+            </button>
+        </li>
+    })
     return (
         <div className="game">
             <div className="game-board">
-                <Board />
+                <Board onClick={selectSquare} squares={currentSquares} />
+                <button className="restart history-btn" onClick={restart}>
+                    restart
+                </button>
+            </div>
+            <div className="game-info">
+                <div className="status">{status}</div>
+                <ol>{moves}</ol>
             </div>
         </div>
     )
 }
 
-function calculateStatus(winner: any, squares: any, nextValue: any) {
+function calculateStatus(winner: string, squares: string[], nextValue: string) {
     return winner
         ? `Winner: ${winner}`
         : squares.every(Boolean)
@@ -79,12 +99,10 @@ function calculateStatus(winner: any, squares: any, nextValue: any) {
             : `Next player: ${nextValue}`
 }
 
-// eslint-disable-next-line no-unused-vars
 function calculateNextValue(squares: any) {
     return squares.filter(Boolean).length % 2 === 0 ? 'X' : 'O'
 }
 
-// eslint-disable-next-line no-unused-vars
 function calculateWinner(squares: any) {
     const lines = [
         [0, 1, 2],
@@ -107,6 +125,7 @@ function calculateWinner(squares: any) {
 const TicTacToe = () => {
     return (
         <>
+            <h1 className="game-title">Tic-Tac-Toe Game</h1>
             <Game />
         </>
     )
